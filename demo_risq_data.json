@@ -11,12 +11,12 @@
     "Related Documents": [],
     "High Risk": false,
     "Deleted": false,
-    "company_prep": "-. PR-OPR-BCP/ Ch.2 / 2.2.8 (Revised) \n  -. Checklist OPR-SOP-F36 Remote vv \n    open/close time check (new)",
+    "company_prep": "-. PR-OPR-BCP/ Ch.2 / 2.2.8 (Revised)\n-. Checklist OPR-SOP-F36 Remote vv open/close time check (new)",
     "action_color": {
       "E": "red",
       "K": "red"
     },
-    "essential_check": "1) 신규 체크리스트 작성 기록\n   OPR-SOP-F36 R.vv  작동 및 작동시간\n   체크리스트 작성하여 보관 할것\n2) Remote vv 정비관련  PMS(Hivms)\n   에 등재 되어 있지 않은경우 감독 통보",
+    "essential_check": "1) 신규 체크리스트 작성 기록 OPR-SOP-F36 R.vv  작동 및 작동시간 체크리스트 작성하여 보관 할것\n2) Remote vv 정비관련  PMS(Hivms) 에 등재 되어 있지 않은경우 감독 통보",
     "related_documents": [
       {
         "title": "Bulk Cargo Handling Procedure (SMS)",
@@ -107,7 +107,7 @@
       "E": "red",
       "K": "red"
     },
-    "essential_check": "1) 화물창 점검/장비 체크리스트 작성 보관 \n -.  OPR-BCH-14 : 매항차 작성\n -.  OPR-BCH-F15: 3개월 마다 작성",
+    "essential_check": "1) 화물창 점검/장비 체크리스트 작성 보관\n-.  OPR-BCH-14 : 매항차 작성\n-.  OPR-BCH-F15: 3개월 마다 작성",
     "related_documents": [
       {
         "title": "Bulk Cargo Handling Procedure (SMS)",
@@ -167,9 +167,9 @@
     "Related Documents": [],
     "High Risk": false,
     "Deleted": false,
-    "company_prep": "CBT  및 선장/일항사 증서 확인 \n해치카바 간극점검 매 6개월 \n\n선박관리팀 협조 요청사항\n1) PMS 상 hatch cover component clearances every six months 수립 필요\n2) hatch cover minimum recommended  spare parts (제조사 지침 참조)\n3) Hatch cover inventory (제조사 지침 참조)",
+    "company_prep": "CBT  및 선장/일항사 증서 확인 해치카바 간극점검 매 6개월\n선박관리팀 협조 요청사항\n1) PMS 상 hatch cover component clearances every six months 수립 필요\n2) hatch cover minimum recommended  spare parts (제조사 지침 참조)\n3) Hatch cover inventory (제조사 지침 참조)",
     "action_color": {},
-    "essential_check": "1) H/cover 점검 체크리스트 작성상태 확인\n    OPR-BCH-F17 : 해치카바 수밀 (3개월)\n    OPR-BCH-F18,19 :본선에 맞는 체크리스트\n      찿아 작성해 둘것 \n2) 해치카바 정비지침 관련 \n    PR-OPR-BCP Ch.2 2.2.10~2.2.17 및 \n    지침서 \" IN-HAT-001\" 참조  \n3) 해치카바 open/close시 위험성 평가서\n    작성 비치 (입항/출항전 자료)\n4) CBT자료 작성\n6) H/cover clearance 계측작업이 PMS 등재\n   여부 확인 (미등록시 감독 연락)",
+    "essential_check": "1) H/cover 점검 체크리스트 작성상태 확인 OPR-BCH-F17 : 해치카바 수밀 (3개월) OPR-BCH-F18,19 :본선에 맞는 체크리스트 찿아 작성해 둘것\n2) 해치카바 정비지침 관련 PR-OPR-BCP Ch.2 2.2.10~2.2.17 및 지침서 \" IN-HAT-001\" 참조\n3) 해치카바 open/close시 위험성 평가서 작성 비치 (입항/출항전 자료)\n4) CBT자료 작성\n6) H/cover clearance 계측작업이 PMS 등재 여부 확인 (미등록시 감독 연락)",
     "related_documents": [
       {
         "title": "Hatch Cover Maintenance Instruction (IN-HAT-001)",
@@ -203,7 +203,7 @@
     "Related Documents": [],
     "High Risk": false,
     "Deleted": false,
-    "company_prep": ". LDBF(Line design break force)가 선박의\n  MBL(Minimum Breaking load)대비 증가한 경우 \n  선급확인 및 강도 재계산이 되어야 한다. \n. LDBF는 MBL의 100~105% 이내여야 하며, 이상일 \n 경우 섵에 코멘트가 있어야 한다.\n. TDBF(Tail Design Break Force)는 LDBF보다 커야\n  하며, MBL의 125~130% 이내이어야 한다.\n  만약, MBL의 130% 이상일 경우 서트에 코멘트가\n  기록 되어야 한다.  \n. Tail rope의 표준 권장 길이는 11미터이다. \n. Mooring rope, Tail 로프의 잔존강도가 75%에 \n  도달하면 교체해야 한다\n. 매뉴얼 PR-SMM-MNT App.1 참조\n. 무어링 로프는 팔렛트위에 보관이 되어야 하며, \n 무어링 라인 조작지역은 미끄럼 방지위해 Non-Slip\n 이 적용 되어야 한다.",
+    "company_prep": ". LDBF(Line design break force)가 선박의 MBL(Minimum Breaking load)대비 증가한 경우 선급확인 및 강도 재계산이 되어야 한다.\n. LDBF는 MBL의 100~105% 이내여야 하며, 이상일 경우 섵에 코멘트가 있어야 한다.\n. TDBF(Tail Design Break Force)는 LDBF보다 커야 하며, MBL의 125~130% 이내이어야 한다. 만약, MBL의 130% 이상일 경우 서트에 코멘트가 기록 되어야 한다.\n. Tail rope의 표준 권장 길이는 11미터이다.\n. Mooring rope, Tail 로프의 잔존강도가 75%에 도달하면 교체해야 한다\n. 매뉴얼 PR-SMM-MNT App.1 참조\n. 무어링 로프는 팔렛트위에 보관이 되어야 하며, 무어링 라인 조작지역은 미끄럼 방지위해 Non-Slip 이 적용 되어야 한다.",
     "action_color": {
       "E": "red",
       "K": "red"
@@ -301,7 +301,7 @@
       "E": "red",
       "K": "red"
     },
-    "essential_check": "1) Checklist작성 보관 상태 확인\n    SMM-MNT-F26",
+    "essential_check": "1) Checklist작성 보관 상태 확인 SMM-MNT-F26",
     "related_documents": [
       {
         "title": "Engine Part Quarterly Safety Checklist (SMM-MNT-F26)",

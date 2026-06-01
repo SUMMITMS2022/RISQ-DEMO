@@ -230,40 +230,66 @@ def get_field(item: dict, *keys) -> str:
 
 
 def render_action(text: str = "", segments=None, lang: str = "en") -> str:
-    """액션 필드 렌더링 — 엑셀 원문 서식 유지, 색상만 적용."""
+    """액션/Essential Check 렌더링 — 불릿 스타일 + 색상 적용."""
     import html as _h
     CSS = {"red": "#e02424", "blue": "#1a56db", "sky": "#00b0f0"}
     has_kr = lambda t: bool(re.search(r"[가-힣]", t or ""))
 
+    # 텍스트 소스 결정
     if segments:
-        parts = []
+        # rich 세그먼트 → 색상 있는 줄 set 구성
+        colored = {}
         for seg in segments:
-            txt   = seg.get("text", "")
             color = seg.get("color")
-            if not txt:
-                continue
-            is_kr_seg = has_kr(txt)
-            if lang == "en" and is_kr_seg:
-                continue
-            if lang == "kr" and not is_kr_seg:
-                continue
-            esc = _h.escape(txt)
-            if color and color in CSS:
-                parts.append(
-                    f'<span style="color:{CSS[color]}">{esc}</span>'
-                )
-            else:
-                parts.append(esc)
-        body = "".join(parts)
+            if color:
+                for l in seg["text"].split("\n"):
+                    ls = l.strip()
+                    if ls:
+                        colored[ls] = color
+        src_text = "".join(seg["text"] for seg in segments)
     else:
         if not text or text.strip() in ("-", "NII"):
             return "<span style='color:var(--muted);font-style:italic'>—</span>"
-        body = _h.escape(text)
+        src_text  = text
+        colored   = {}
 
-    return (
-        f'<div style="white-space:pre-wrap;line-height:1.7;font-size:.9rem">'
-        f'{body}</div>'
-    )
+    parts = []
+    for line in src_text.split("\n"):
+        s = line.strip()
+        if not s:
+            continue
+        # 언어 필터 (segments 사용 시)
+        if segments:
+            if lang == "en" and has_kr(s): continue
+            if lang == "kr" and not has_kr(s): continue
+
+        # 색상 매핑
+        color   = colored.get(s)
+        c_style = f'color:{CSS[color]};' if color and color in CSS else ""
+
+        esc = _h.escape(s)
+
+        # 불릿 스타일 변환 (render_bilingual 동일)
+        if re.match(r'^-+\.\s', s):          # -. 또는 --. → 들여쓰기 불릿
+            inner = _h.escape(re.sub(r'^-+\.\s*', '', s))
+            parts.append(
+                f"<span class='line-sub' style='{c_style}'>&ndash; {inner}</span>"
+            )
+        elif re.match(r'^\.\s', s):            # . → 상위 불릿
+            inner = _h.escape(s[2:])
+            parts.append(
+                f"<span class='line-bullet' style='{c_style}'>&rsaquo; {inner}</span>"
+            )
+        elif re.match(r'^\d+[\.\)]\s', s):     # 1. / 1) → 번호 항목
+            parts.append(
+                f"<span class='line-bullet' style='{c_style}'>{esc}</span>"
+            )
+        else:
+            parts.append(
+                f"<span class='line-en' style='{c_style}'>{esc}</span>"
+            )
+
+    return "".join(parts) if parts else "<span style='color:var(--muted)'>—</span>"
 
 
 # legacy alias
@@ -507,34 +533,9 @@ def toggle_bookmark(no: str) -> None:
 
 
 def render_essential_check(text: str) -> str:
-    """
-    Essential Check 전용 렌더러.
-    한/영 혼합 텍스트를 언어 필터 없이 그대로 표시.
-    - '. ' / '-. ' 불릿 → 들여쓰기
-    - 줄바꿈 → 단락 구분
-    """
-    if not text or not text.strip():
-        return "<span style='color:var(--muted);font-style:italic'>—</span>"
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
-    parts = []
-    for line in lines:
-        e = _html.escape(line)
-        if line.startswith('-. ') or line.startswith('-. '):
-            parts.append(
-                f"<p class='line-kr' style='margin:1px 0 1px 16px;"
-                f"white-space:normal;max-width:1100px;'>• {_html.escape(line[3:])}</p>"
-            )
-        elif line.startswith('. '):
-            parts.append(
-                f"<p class='line-kr' style='margin:2px 0;white-space:normal;"
-                f"max-width:1100px;'>• {_html.escape(line[2:])}</p>"
-            )
-        else:
-            parts.append(
-                f"<p class='line-kr' style='margin:0 0 6px 0;white-space:normal;"
-                f"max-width:1100px;'>{e}</p>"
-            )
-    return "".join(parts)
+    """Essential Check / company_prep 렌더러 — render_action 위임."""
+    return render_action(text)
+
 
 
 def field_matches_all(field_text: str, keywords: list) -> bool:
