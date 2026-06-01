@@ -232,64 +232,62 @@ def get_field(item: dict, *keys) -> str:
 def render_action(text: str = "", segments=None, lang: str = "en") -> str:
     """액션/Essential Check 렌더링 — 불릿 스타일 + 색상 적용."""
     import html as _h
-    CSS = {"red": "#e02424", "blue": "#1a56db", "sky": "#00b0f0"}
+    CSS_COLOR = {"red": "#e02424", "blue": "#1a56db", "sky": "#00b0f0"}
     has_kr = lambda t: bool(re.search(r"[가-힣]", t or ""))
 
-    # 텍스트 소스 결정
     if segments:
-        # rich 세그먼트 → 색상 있는 줄 set 구성
         colored = {}
         for seg in segments:
-            color = seg.get("color")
-            if color:
+            if seg.get("color"):
                 for l in seg["text"].split("\n"):
                     ls = l.strip()
                     if ls:
-                        colored[ls] = color
+                        colored[ls] = seg["color"]
         src_text = "".join(seg["text"] for seg in segments)
     else:
         if not text or text.strip() in ("-", "NII"):
             return "<span style='color:var(--muted);font-style:italic'>—</span>"
-        src_text  = text
-        colored   = {}
+        src_text = text
+        colored  = {}
 
     parts = []
     for line in src_text.split("\n"):
         s = line.strip()
         if not s:
             continue
-        # 언어 필터 (segments 사용 시)
         if segments:
             if lang == "en" and has_kr(s): continue
             if lang == "kr" and not has_kr(s): continue
 
-        # 색상 매핑
-        color   = colored.get(s)
-        c_style = f'color:{CSS[color]};' if color and color in CSS else ""
+        color  = colored.get(s)
+        c_css  = f"color:{CSS_COLOR[color]};" if color and color in CSS_COLOR else ""
 
         esc = _h.escape(s)
 
-        # 불릿 스타일 변환 (render_bilingual 동일)
-        if re.match(r'^-+\.\s', s):          # -. 또는 --. → 들여쓰기 불릿
+        if re.match(r'^-+\.\s', s):
             inner = _h.escape(re.sub(r'^-+\.\s*', '', s))
             parts.append(
-                f"<span class='line-sub' style='{c_style}'>&ndash; {inner}</span>"
+                f"<div style='margin:2px 0 2px 16px;{c_css}'>&ndash; {inner}</div>"
             )
-        elif re.match(r'^\.\s', s):            # . → 상위 불릿
+        elif re.match(r'^\.\s', s):
             inner = _h.escape(s[2:])
             parts.append(
-                f"<span class='line-bullet' style='{c_style}'>&rsaquo; {inner}</span>"
+                f"<div style='margin:3px 0;{c_css}'>&rsaquo; {inner}</div>"
             )
-        elif re.match(r'^\d+[\.\)]\s', s):     # 1. / 1) → 번호 항목
+        elif re.match(r'^\d+[\.\)]\s', s):
             parts.append(
-                f"<span class='line-bullet' style='{c_style}'>{esc}</span>"
+                f"<div style='margin:4px 0;font-weight:500;{c_css}'>{esc}</div>"
             )
         else:
             parts.append(
-                f"<span class='line-en' style='{c_style}'>{esc}</span>"
+                f"<div style='margin:3px 0;{c_css}'>{esc}</div>"
             )
 
-    return "".join(parts) if parts else "<span style='color:var(--muted)'>—</span>"
+    return (
+        "<div style='line-height:1.7;font-size:.9rem'>"
+        + "".join(parts)
+        + "</div>"
+    ) if parts else "<span style='color:var(--muted)'>—</span>"
 
 
 # legacy alias
