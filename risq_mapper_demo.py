@@ -319,27 +319,40 @@ def render_bilingual(text, lang: str = "en") -> str:
     for line in lines:
         is_kr = bool(re.search(r"[가-힣]", line))
         if items:
-            prev_kr = bool(re.search(r"[가-힣]", items[-1]["text"]))
-            # 언어가 바뀌면 항상 새 항목
-            # 같은 언어여도 각 줄은 독립 단락 (PDF 재파싱으로 이미 구조화됨)
-            # 예외: 소문자로 시작하는 continuation 줄만 이전 줄에 합침
-            is_continuation = (
-                not is_kr and
-                line and line[0].islower() and
-                not re.match(r'^[1-9]\d?\.\s', line) and
-                not line.startswith('>')
-            )
-            if prev_kr == is_kr and is_continuation:
+            prev_kr   = bool(re.search(r"[가-힣]", items[-1]["text"]))
+            prev_text = items[-1]["text"]
+            # 이전 줄이 문장 끝 부호 없이 끝나고 같은 언어면 → 이어 붙임 (PDF 강제 개행)
+            prev_ends_sentence = bool(re.search(r'[.!?:]\s*$', prev_text))
+            starts_new = (bool(re.match(r'^[>›•]|^\d+\.\s|^-\.\s', line))
+                          or citation_re.match(line))
+            if (prev_kr == is_kr
+                    and not prev_ends_sentence
+                    and not starts_new):
                 items[-1]["text"] += " " + line
             else:
                 items.append({"text": line})
         else:
             items.append({"text": line})
 
-    target = [it for it in items
-              if (lang == "en" and not bool(re.search(r"[가-힣]", it["text"])))
-              or (lang == "kr" and bool(re.search(r"[가-힣]", it["text"])))
-              or bool(citation_re.search(it["text"]))]
+    # 출처 위치 기반 필터: EN 섹션 출처 → EN 모드에만, KR 섹션 출처 → KR 모드에만
+    first_kr_pos = next(
+        (i for i, it in enumerate(items) if bool(re.search(r"[가-힣]", it["text"]))),
+        len(items)
+    )
+    target = []
+    for i, it in enumerate(items):
+        is_kr_it  = bool(re.search(r"[가-힣]", it["text"]))
+        is_cite   = bool(citation_re.search(it["text"]))
+        if lang == "en":
+            if not is_kr_it and not is_cite:
+                target.append(it)
+            elif is_cite and i < first_kr_pos:
+                target.append(it)
+        elif lang == "kr":
+            if is_kr_it:
+                target.append(it)
+            elif is_cite and i >= first_kr_pos:
+                target.append(it)
 
     # KR 모드이고 KR이 있지만 EN보다 현저히 짧으면 (부분 번역)
     # → KR 표시 후 번역 안 된 EN 단락을 흐린 색으로 추가 표시
@@ -660,13 +673,17 @@ def show_full_dialog(item: dict) -> None:
                       <button onclick="prev()">◀ 이전</button>
                       <span id="pi">로딩 중...</span>
                       <button onclick="next()">다음 ▶</button>
+                      <span style="margin-left:12px">|</span>
+                      <button onclick="zoom(-0.2)">🔍−</button>
+                      <span id="zi">100%</span>
+                      <button onclick="zoom(0.2)">🔍+</button>
                     </div>
                     <div id="wrap"><canvas id="c"></canvas></div>
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
                     <script>
                     pdfjsLib.GlobalWorkerOptions.workerSrc=
                       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                    var b64="{b64}",doc=null,cur=1;
+                    var b64="{b64}",doc=null,cur=1,zoomFactor=1.0;
                     var bin=atob(b64),arr=new Uint8Array(bin.length);
                     for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
                     pdfjsLib.getDocument({{data:arr.buffer}}).promise.then(function(d){{
@@ -677,17 +694,19 @@ def show_full_dialog(item: dict) -> None:
                         var wrap=document.getElementById('wrap');
                         var w=wrap.clientWidth-24;
                         var base=p.getViewport({{scale:1}});
-                        var scale=w/base.width;
+                        var scale=(w/base.width)*zoomFactor;
                         var vp=p.getViewport({{scale:scale}});
                         var cv=document.getElementById('c');
                         cv.height=vp.height;cv.width=vp.width;
                         p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
                         document.getElementById('pi').textContent=n+' / '+doc.numPages;
+                        document.getElementById('zi').textContent=Math.round(zoomFactor*100)+'%';
                         cur=n;
                       }});
                     }}
                     function prev(){{if(cur>1)render(cur-1);}}
                     function next(){{if(doc&&cur<doc.numPages)render(cur+1);}}
+                    function zoom(d){{zoomFactor=Math.max(0.4,Math.min(3.0,zoomFactor+d));render(cur);}}
                     </script></body></html>""",
                     height=660, scrolling=False,
                 )
@@ -1129,13 +1148,17 @@ if page == PAGE_SEARCH:
                                       <button onclick="prev()">◀ 이전</button>
                                       <span id="pi">로딩 중...</span>
                                       <button onclick="next()">다음 ▶</button>
+                                      <span style="margin-left:12px">|</span>
+                                      <button onclick="zoom(-0.2)">🔍−</button>
+                                      <span id="zi">100%</span>
+                                      <button onclick="zoom(0.2)">🔍+</button>
                                     </div>
                                     <div id="wrap"><canvas id="c"></canvas></div>
                                     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
                                     <script>
                                     pdfjsLib.GlobalWorkerOptions.workerSrc=
                                       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                                    var b64="{b64}",doc=null,cur=1;
+                                    var b64="{b64}",doc=null,cur=1,zoomFactor=1.0;
                                     var bin=atob(b64),arr=new Uint8Array(bin.length);
                                     for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
                                     pdfjsLib.getDocument({{data:arr.buffer}}).promise.then(function(d){{
@@ -1146,17 +1169,19 @@ if page == PAGE_SEARCH:
                                         var wrap=document.getElementById('wrap');
                                         var w=wrap.clientWidth-24;
                                         var base=p.getViewport({{scale:1}});
-                                        var scale=w/base.width;
+                                        var scale=(w/base.width)*zoomFactor;
                                         var vp=p.getViewport({{scale:scale}});
                                         var cv=document.getElementById('c');
                                         cv.height=vp.height;cv.width=vp.width;
                                         p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
                                         document.getElementById('pi').textContent=n+' / '+doc.numPages;
+                                        document.getElementById('zi').textContent=Math.round(zoomFactor*100)+'%';
                                         cur=n;
                                       }});
                                     }}
                                     function prev(){{if(cur>1)render(cur-1);}}
                                     function next(){{if(doc&&cur<doc.numPages)render(cur+1);}}
+                                    function zoom(d){{zoomFactor=Math.max(0.4,Math.min(3.0,zoomFactor+d));render(cur);}}
                                     </script></body></html>""",
                                     height=660, scrolling=False,
                                 )
