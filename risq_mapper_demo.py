@@ -836,6 +836,11 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+# 버튼 클릭으로 Search 탭 전환 요청이 있으면 radio 렌더 전에 처리
+if st.session_state.get("_jump_to_search"):
+    st.session_state["main_nav"] = PAGE_SEARCH
+    del st.session_state["_jump_to_search"]
+
 page = st.radio(
     "nav",
     [PAGE_SEARCH, PAGE_KW, PAGE_HR, PAGE_BOOKMARKS],
@@ -857,8 +862,8 @@ for _i, _no in enumerate(DEMO_NOS):
     _is_hr = _item.get("High Risk") is True
     _label = f"⚠ {_no}" if _is_hr else _no
     if _btn_cols[_i].button(_label, key=f"demo_quick_{_no}", use_container_width=True):
-        st.session_state["_search_jump"] = _no
-        st.session_state["main_nav"]     = PAGE_SEARCH
+        st.session_state["_search_jump"]  = _no
+        st.session_state["_jump_to_search"] = True
         st.rerun()
 
 st.markdown("<hr style='margin:4px 0 20px;border-color:var(--border)'>", unsafe_allow_html=True)
