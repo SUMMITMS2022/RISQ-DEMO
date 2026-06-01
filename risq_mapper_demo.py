@@ -873,14 +873,24 @@ st.markdown("<hr style='margin:4px 0 20px;border-color:var(--border)'>", unsafe_
 # PAGE 1 — Search by RISQ No.
 # ──────────────────────────────────────────────────────────────
 if page == PAGE_SEARCH:
+    # _search_jump → _active_search 로 저장 (pop하지 않고 유지)
+    if "_search_jump" in st.session_state:
+        st.session_state["_active_search"] = st.session_state.pop("_search_jump")
+
     risq_no = st.text_input(
         "RISQ No.",
         placeholder="e.g.  2.5 · 4.16 · 9.9   or   4  (prefix → all of Chapter 4)",
         label_visibility="collapsed",
     )
 
+    # 사용자가 직접 입력하면 _active_search 갱신, 지우면 초기화
+    if risq_no.strip():
+        st.session_state["_active_search"] = risq_no.strip()
+    elif not risq_no and "risq_no" not in st.session_state.get("_typing", {}):
+        pass  # 버튼 클릭으로 인한 재실행 — _active_search 유지
+
     # 최근 검색 기록 표시
-    if not risq_no and st.session_state.search_history:
+    if not risq_no and not st.session_state.get("_active_search") and st.session_state.search_history:
         st.markdown(
             "<div style='font-size:.76rem;color:var(--muted);margin-bottom:4px'>최근 검색</div>",
             unsafe_allow_html=True,
@@ -888,15 +898,14 @@ if page == PAGE_SEARCH:
         cols = st.columns(min(len(st.session_state.search_history), 8))
         for i, h in enumerate(st.session_state.search_history[:8]):
             if cols[i].button(h, key=f"sh_{h}_{i}"):
-                st.session_state["_search_jump"] = h
+                st.session_state["_active_search"] = h
                 st.rerun()
 
-    # 검색 기록 클릭으로 재실행
-    if "_search_jump" in st.session_state:
-        risq_no = st.session_state.pop("_search_jump")
+    # 유효 쿼리: 직접 입력 > _active_search
+    active_query = risq_no.strip() or st.session_state.get("_active_search", "")
 
-    if risq_no:
-        query = risq_no.strip()
+    if active_query:
+        query = active_query
 
         # 검색 기록 저장 (중복 제거, 최대 8개)
         hist = st.session_state.search_history
