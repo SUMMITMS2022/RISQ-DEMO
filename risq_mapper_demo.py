@@ -660,12 +660,47 @@ def show_full_dialog(item: dict) -> None:
                 import base64 as _b64
                 b64 = _b64.b64encode(pdf_bytes).decode()
                 st.components.v1.html(
-                    f"""<!DOCTYPE html><html><body style="margin:0;padding:0">
-                    <embed src="data:application/pdf;base64,{b64}"
-                           type="application/pdf" width="100%" height="600"
-                           style="display:block;border:none">
-                    </body></html>""",
-                    height=620, scrolling=False,
+                    f"""<!DOCTYPE html><html><head>
+                    <style>
+                    body{{margin:0;padding:0;background:#525659;font-family:sans-serif}}
+                    #bar{{background:#3a3a3a;padding:7px 12px;display:flex;
+                         align-items:center;gap:10px;color:#fff;font-size:13px}}
+                    #bar button{{background:#555;color:#fff;border:none;
+                         padding:4px 12px;border-radius:4px;cursor:pointer}}
+                    #bar button:hover{{background:#888}}
+                    #wrap{{overflow:auto;height:560px;text-align:center;padding:10px}}
+                    canvas{{box-shadow:0 2px 8px rgba(0,0,0,.4)}}
+                    </style></head><body>
+                    <div id="bar">
+                      <button onclick="prev()">◀ 이전</button>
+                      <span id="pi">로딩 중...</span>
+                      <button onclick="next()">다음 ▶</button>
+                    </div>
+                    <div id="wrap"><canvas id="c"></canvas></div>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+                    <script>
+                    pdfjsLib.GlobalWorkerOptions.workerSrc=
+                      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    var b64="{b64}",doc=null,cur=1;
+                    var bin=atob(b64),arr=new Uint8Array(bin.length);
+                    for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+                    pdfjsLib.getDocument({{data:arr.buffer}}).promise.then(function(d){{
+                      doc=d;render(1);
+                    }});
+                    function render(n){{
+                      doc.getPage(n).then(function(p){{
+                        var vp=p.getViewport({{scale:1.4}});
+                        var cv=document.getElementById('c');
+                        cv.height=vp.height;cv.width=vp.width;
+                        p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
+                        document.getElementById('pi').textContent=n+' / '+doc.numPages;
+                        cur=n;
+                      }});
+                    }}
+                    function prev(){{if(cur>1)render(cur-1);}}
+                    function next(){{if(doc&&cur<doc.numPages)render(cur+1);}}
+                    </script></body></html>""",
+                    height=660, scrolling=False,
                 )
 
 
@@ -808,6 +843,23 @@ page = st.radio(
     label_visibility="collapsed",
     key="main_nav",
 )
+
+# ── 6개 항목 빠른 선택 버튼 (모든 탭에서 항상 표시) ──────────────
+st.markdown(
+    "<div style='font-size:.78rem;color:var(--muted);margin:10px 0 4px'>"
+    "📌 Demo Items</div>",
+    unsafe_allow_html=True,
+)
+DEMO_NOS = [x["NO"] for x in data if not x.get("Deleted")]
+_btn_cols = st.columns(len(DEMO_NOS))
+for _i, _no in enumerate(DEMO_NOS):
+    _item = next((x for x in data if x["NO"] == _no), {})
+    _is_hr = _item.get("High Risk") is True
+    _label = f"⚠ {_no}" if _is_hr else _no
+    if _btn_cols[_i].button(_label, key=f"demo_quick_{_no}", use_container_width=True):
+        st.session_state["_search_jump"] = _no
+        st.session_state["main_nav"]     = PAGE_SEARCH
+        st.rerun()
 
 st.markdown("<hr style='margin:4px 0 20px;border-color:var(--border)'>", unsafe_allow_html=True)
 
@@ -1067,13 +1119,47 @@ if page == PAGE_SEARCH:
                                 import base64 as _b64
                                 b64 = _b64.b64encode(pdf_bytes).decode()
                                 st.components.v1.html(
-                                    f"""<!DOCTYPE html><html><body style="margin:0;padding:0">
-                                    <embed src="data:application/pdf;base64,{b64}"
-                                           type="application/pdf"
-                                           width="100%" height="600"
-                                           style="display:block;border:none">
-                                    </body></html>""",
-                                    height=620, scrolling=False,
+                                    f"""<!DOCTYPE html><html><head>
+                                    <style>
+                                    body{{margin:0;padding:0;background:#525659;font-family:sans-serif}}
+                                    #bar{{background:#3a3a3a;padding:7px 12px;display:flex;
+                                         align-items:center;gap:10px;color:#fff;font-size:13px}}
+                                    #bar button{{background:#555;color:#fff;border:none;
+                                         padding:4px 12px;border-radius:4px;cursor:pointer}}
+                                    #bar button:hover{{background:#888}}
+                                    #wrap{{overflow:auto;height:560px;text-align:center;padding:10px}}
+                                    canvas{{box-shadow:0 2px 8px rgba(0,0,0,.4)}}
+                                    </style></head><body>
+                                    <div id="bar">
+                                      <button onclick="prev()">◀ 이전</button>
+                                      <span id="pi">로딩 중...</span>
+                                      <button onclick="next()">다음 ▶</button>
+                                    </div>
+                                    <div id="wrap"><canvas id="c"></canvas></div>
+                                    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+                                    <script>
+                                    pdfjsLib.GlobalWorkerOptions.workerSrc=
+                                      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                                    var b64="{b64}",doc=null,cur=1;
+                                    var bin=atob(b64),arr=new Uint8Array(bin.length);
+                                    for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+                                    pdfjsLib.getDocument({{data:arr.buffer}}).promise.then(function(d){{
+                                      doc=d;render(1);
+                                    }});
+                                    function render(n){{
+                                      doc.getPage(n).then(function(p){{
+                                        var vp=p.getViewport({{scale:1.4}});
+                                        var cv=document.getElementById('c');
+                                        cv.height=vp.height;cv.width=vp.width;
+                                        p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
+                                        document.getElementById('pi').textContent=n+' / '+doc.numPages;
+                                        cur=n;
+                                      }});
+                                    }}
+                                    function prev(){{if(cur>1)render(cur-1);}}
+                                    function next(){{if(doc&&cur<doc.numPages)render(cur+1);}}
+                                    </script></body></html>""",
+                                    height=660, scrolling=False,
                                 )
                             st.divider()
 
