@@ -336,25 +336,10 @@ def render_bilingual(text, lang: str = "en") -> str:
         else:
             items.append({"text": line})
 
-    # 출처 위치 기반 필터: EN섹션 출처 → EN 모드에만, KR섹션 출처 → KR 모드에만
-    first_kr_pos = next(
-        (i for i, it in enumerate(items) if bool(re.search(r"[가-힣]", it["text"]))),
-        len(items)
-    )
-    target = []
-    for i, it in enumerate(items):
-        is_kr   = bool(re.search(r"[가-힣]", it["text"]))
-        is_cite = bool(citation_re.search(it["text"]))
-        if lang == "en":
-            if not is_kr and not is_cite:
-                target.append(it)
-            elif is_cite and i < first_kr_pos:
-                target.append(it)
-        elif lang == "kr":
-            if is_kr:
-                target.append(it)
-            elif is_cite and i >= first_kr_pos:
-                target.append(it)
+    target = [it for it in items
+              if (lang == "en" and not bool(re.search(r"[가-힣]", it["text"])))
+              or (lang == "kr" and bool(re.search(r"[가-힣]", it["text"])))
+              or bool(citation_re.search(it["text"]))]
 
     # KR 모드이고 KR이 있지만 EN보다 현저히 짧으면 (부분 번역)
     # → KR 표시 후 번역 안 된 EN 단락을 흐린 색으로 추가 표시
@@ -689,7 +674,11 @@ def show_full_dialog(item: dict) -> None:
                     }});
                     function render(n){{
                       doc.getPage(n).then(function(p){{
-                        var vp=p.getViewport({{scale:1.4}});
+                        var wrap=document.getElementById('wrap');
+                        var w=wrap.clientWidth-24;
+                        var base=p.getViewport({{scale:1}});
+                        var scale=w/base.width;
+                        var vp=p.getViewport({{scale:scale}});
                         var cv=document.getElementById('c');
                         cv.height=vp.height;cv.width=vp.width;
                         p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
@@ -873,24 +862,19 @@ st.markdown("<hr style='margin:4px 0 20px;border-color:var(--border)'>", unsafe_
 # PAGE 1 — Search by RISQ No.
 # ──────────────────────────────────────────────────────────────
 if page == PAGE_SEARCH:
-    # _search_jump → _active_search 로 저장 (pop하지 않고 유지)
+    # _search_jump 를 text_input key 로 주입 → 재실행 후에도 유지
     if "_search_jump" in st.session_state:
-        st.session_state["_active_search"] = st.session_state.pop("_search_jump")
+        st.session_state["_no_input"] = st.session_state.pop("_search_jump")
 
     risq_no = st.text_input(
         "RISQ No.",
         placeholder="e.g.  2.5 · 4.16 · 9.9   or   4  (prefix → all of Chapter 4)",
         label_visibility="collapsed",
+        key="_no_input",
     )
 
-    # 사용자가 직접 입력하면 _active_search 갱신, 지우면 초기화
-    if risq_no.strip():
-        st.session_state["_active_search"] = risq_no.strip()
-    elif not risq_no and "risq_no" not in st.session_state.get("_typing", {}):
-        pass  # 버튼 클릭으로 인한 재실행 — _active_search 유지
-
     # 최근 검색 기록 표시
-    if not risq_no and not st.session_state.get("_active_search") and st.session_state.search_history:
+    if not risq_no and st.session_state.search_history:
         st.markdown(
             "<div style='font-size:.76rem;color:var(--muted);margin-bottom:4px'>최근 검색</div>",
             unsafe_allow_html=True,
@@ -898,14 +882,11 @@ if page == PAGE_SEARCH:
         cols = st.columns(min(len(st.session_state.search_history), 8))
         for i, h in enumerate(st.session_state.search_history[:8]):
             if cols[i].button(h, key=f"sh_{h}_{i}"):
-                st.session_state["_active_search"] = h
+                st.session_state["_no_input"] = h
                 st.rerun()
 
-    # 유효 쿼리: 직접 입력 > _active_search
-    active_query = risq_no.strip() or st.session_state.get("_active_search", "")
-
-    if active_query:
-        query = active_query
+    if risq_no:
+        query = risq_no.strip()
 
         # 검색 기록 저장 (중복 제거, 최대 8개)
         hist = st.session_state.search_history
@@ -965,7 +946,7 @@ if page == PAGE_SEARCH:
                     for i, sit in enumerate(similar):
                         sno = sit.get("NO", "")
                         if scols[i].button(sno, key=f"sim_{sno}"):
-                            st.session_state["_search_jump"] = sno
+                            st.session_state["_no_input"] = sno
                             st.rerun()
         else:
             st.caption(f"{len(matches)} item(s) found")
@@ -1162,7 +1143,11 @@ if page == PAGE_SEARCH:
                                     }});
                                     function render(n){{
                                       doc.getPage(n).then(function(p){{
-                                        var vp=p.getViewport({{scale:1.4}});
+                                        var wrap=document.getElementById('wrap');
+                                        var w=wrap.clientWidth-24;
+                                        var base=p.getViewport({{scale:1}});
+                                        var scale=w/base.width;
+                                        var vp=p.getViewport({{scale:scale}});
                                         var cv=document.getElementById('c');
                                         cv.height=vp.height;cv.width=vp.width;
                                         p.render({{canvasContext:cv.getContext('2d'),viewport:vp}});
