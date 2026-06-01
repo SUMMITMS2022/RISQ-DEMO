@@ -146,16 +146,35 @@ mark { background:#fde68a; border-radius:2px; font-weight:700; padding:0 2px; }
 # ══════════════════════════════════════════════════════════════
 # DATA
 # ══════════════════════════════════════════════════════════════
-# PDF 경로 (Streamlit Cloud / 로컬 모두 대응)
-_BASE = pathlib.Path(__file__).parent
-DOCS_DIR = _BASE / "docs"
+# PDF 경로 탐색 및 사전 로드
+import os
 
+_DOCS_CANDIDATES = [
+    pathlib.Path(__file__).parent / "docs",
+    pathlib.Path(os.getcwd()) / "docs",
+    pathlib.Path("docs"),
+]
+
+@st.cache_data
+def load_pdf_cache() -> dict:
+    """시작 시 docs/ 내 모든 PDF를 메모리에 로드."""
+    cache: dict = {}
+    docs_dir = None
+    for c in _DOCS_CANDIDATES:
+        if c.exists() and c.is_dir():
+            docs_dir = c
+            break
+    if docs_dir is None:
+        return cache
+    for fpath in docs_dir.iterdir():
+        if fpath.suffix.lower() == ".pdf":
+            cache[fpath.name] = fpath.read_bytes()
+    return cache
+
+_PDF_CACHE = load_pdf_cache()
 
 def get_pdf_bytes(filename: str):
-    for p in [DOCS_DIR / filename, pathlib.Path("docs") / filename]:
-        if p.exists():
-            return p.read_bytes()
-    return None
+    return _PDF_CACHE.get(filename, None)
 
 
 @st.cache_data
@@ -317,10 +336,25 @@ def render_bilingual(text, lang: str = "en") -> str:
         else:
             items.append({"text": line})
 
-    target = [it for it in items
-              if (lang == "en" and not bool(re.search(r"[가-힣]", it["text"])))
-              or (lang == "kr" and bool(re.search(r"[가-힣]", it["text"])))
-              or bool(citation_re.search(it["text"]))]
+    # 출처 위치 기반 필터: EN섹션 출처 → EN 모드에만, KR섹션 출처 → KR 모드에만
+    first_kr_pos = next(
+        (i for i, it in enumerate(items) if bool(re.search(r"[가-힣]", it["text"]))),
+        len(items)
+    )
+    target = []
+    for i, it in enumerate(items):
+        is_kr   = bool(re.search(r"[가-힣]", it["text"]))
+        is_cite = bool(citation_re.search(it["text"]))
+        if lang == "en":
+            if not is_kr and not is_cite:
+                target.append(it)
+            elif is_cite and i < first_kr_pos:
+                target.append(it)
+        elif lang == "kr":
+            if is_kr:
+                target.append(it)
+            elif is_cite and i >= first_kr_pos:
+                target.append(it)
 
     # KR 모드이고 KR이 있지만 EN보다 현저히 짧으면 (부분 번역)
     # → KR 표시 후 번역 안 된 EN 단락을 흐린 색으로 추가 표시
