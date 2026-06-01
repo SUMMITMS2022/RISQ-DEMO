@@ -27,8 +27,36 @@
       {
         "title": "PMS 등재 서류",
         "filename": "PMS#Ub4f1#Uc7ac.pdf",
-        "desc": "PMS registration records for remote valve system",
+        "desc": "PMS registration records",
         "type": "pdf"
+      }
+    ],
+    "action_rich_e": [
+      {
+        "text": ". Verify whether the following items are listed in the   \n PMS and check the work dates:\n  -. Valve Remote Control System\n  -. Ballast console condition\n    (gauges, level indicators, lights, valve control\n     status)\n  -. Ballast valve opening/closing operating time\n",
+        "color": null
+      },
+      {
+        "text": "  -. PR-OPR-BCP/ Ch.2 / 2.2.8 (Revised) \n  -. Checklist OPR-SOP-F36 Remote vv \n    open/close time check (new)  ",
+        "color": "red"
+      },
+      {
+        "text": " \n . Method of verifying ballast valve open/close status",
+        "color": null
+      }
+    ],
+    "action_rich_k": [
+      {
+        "text": ". PMS항목에 하기 항목 등재여부 및 작업일 확인\n  -. 밸브 원격제어 시스템 \n  -. 발라스트 console 상태 \n    (게이지, 레벨, 점등, 밸브제어상태)\n  -. 발리스트 밸브 개/폐 작동시간 확인 \n",
+        "color": null
+      },
+      {
+        "text": "  -. PR-OPR-BCP/ Ch.2 / 2.2.8 (개정) \n  -. Checklist OPR-SOP-F36 Remote vv \n    open/close time check (신규)\n",
+        "color": "red"
+      },
+      {
+        "text": ". 발라스트 밸브 개/폐 상태 확인 방법\n",
+        "color": null
       }
     ]
   },
@@ -67,6 +95,26 @@
         "desc": "Completed every 3 months",
         "type": "pdf"
       }
+    ],
+    "action_rich_e": [
+      {
+        "text": ". Present the Cargo Hold Cleaning Checklist\n",
+        "color": null
+      },
+      {
+        "text": ". Refer to manual PR-OPR-BCH Chapter 2\n  / Section 2.2.1\n  -. Checklist: OPR-BCH-F14, F15",
+        "color": "red"
+      }
+    ],
+    "action_rich_k": [
+      {
+        "text": ". 화물창 청소 Checklist제시\n",
+        "color": null
+      },
+      {
+        "text": ". 매뉴얼 PR-OPR-BCH Ch.2 / 2.2.1 \n-. Checklist : OPR-BCH-F14, 15",
+        "color": "red"
+      }
     ]
   },
   {
@@ -92,13 +140,13 @@
       {
         "title": "Hatch Cover Checklist (F17/F18)",
         "filename": "Hcover Checklist F17 F18.pdf",
-        "desc": "Hatch cover watertightness and condition checklists",
+        "desc": "Hatch cover watertightness checklists",
         "type": "pdf"
       },
       {
         "title": "PMS Sample — Hatch Cover (HTBO)",
         "filename": "PMS sample (HTBO).png",
-        "desc": "PMS registration sample for hatch cover maintenance",
+        "desc": "PMS registration sample",
         "type": "image"
       }
     ]
@@ -125,14 +173,46 @@
       {
         "title": "Maintenance Management Procedure (SMS)",
         "filename": "MANUAL- PR-SMM-MNT #Uc815#Ube44#Uad00#Ub9ac #Uc808#Ucc28#Uc11c MAINTENANCE PROCEDURE.pdf",
-        "desc": "Mooring equipment maintenance and certification procedures",
+        "desc": "Mooring equipment maintenance",
         "type": "pdf"
       },
       {
         "title": "BHP Test Manual",
         "filename": "MANUAL- BHP TEST.pdf",
-        "desc": "Brake holding power test procedure for mooring winches",
+        "desc": "Brake holding power test procedure",
         "type": "pdf"
+      }
+    ],
+    "action_rich_e": [
+      {
+        "text": ". If the LDBF (Line Design Break Force) increases\n  compared to the ship’s MBL (Minimum Breaking\n  Load), classification society verification and strength\n  recalculation must be carried out.\n. The LDBF shall be within 100–105% of the ship’s\n  MBL; if it exceeds this range, a comment must be\n  recorded in the certificate.\n. The TDBF (Tail Design Break Force) must be greater\n  than the LDBF and within 125–130% of the ship’s\n  MBL. If it exceeds 130% of the MBL, a comment\n  must be recorded in the certificate.\n. The standard recommended length of the tail rope \n  is 11 metres.\n. Mooring ropes and tail ropes must be replaced\n",
+        "color": null
+      },
+      {
+        "text": "  when their residual strength reaches 75% of the\n  ship’s design MBL.\n",
+        "color": null
+      },
+      {
+        "text": ". Refer to manual PR-SMM-MNT App.1.\n",
+        "color": "red"
+      },
+      {
+        "text": ". Mooring ropes shall be stowed on pallets, and\n  mooring line operating areas shall be treated with\n  non-slip coating to prevent slipping.",
+        "color": null
+      }
+    ],
+    "action_rich_k": [
+      {
+        "text": ". LDBF(Line design break force)가 선박의\n  MBL(Minimum Breaking load)대비 증가한 경우 \n  선급확인 및 강도 재계산이 되어야 한다. \n. LDBF는 MBL의 100~105% 이내여야 하며, 이상일 \n 경우에 코멘트가 있어야 한다.\n. TDBF(Tail Design Break Force)는 LDBF보다 커야\n  하며, MBL의 125~130% 이내이어야 한다.\n  만약, MBL의 130% 이상일 경우 서트에 코멘트가\n  기록 되어야 한다.  \n. Tail rope의 표준 권장 길이는 11미터이다. \n. Mooring rope, Tail 로프의 잔존강도가 75%에 \n  도달하면 교체해야 한다\n",
+        "color": null
+      },
+      {
+        "text": ". 매뉴얼 PR-SMM-MNT App.1 참조",
+        "color": "red"
+      },
+      {
+        "text": "\n. 무어링 로프는 팔렛트위에 보관이 되어야 하며, \n 무어링 라인 조작지역은 미끄럼 방지위해 Non-Slip\n 이 적용 되어야 한다.",
+        "color": null
       }
     ]
   },
@@ -158,8 +238,40 @@
       {
         "title": "Engine Part Quarterly Safety Checklist (SMM-MNT-F26)",
         "filename": "SMM-MNT-F26 Engine Part Quarterly Safety Checklist.pdf",
-        "desc": "Quarterly safety checklist for emergency generator and equipment",
+        "desc": "Quarterly safety checklist",
         "type": "pdf"
+      }
+    ],
+    "action_rich_e": [
+      {
+        "text": ". Em'cy GE load test must be carried out and\n  recorded once every quarter.\n  -. Post the date of the most recent load test at local\n  -. Post the RTS testing method on site.",
+        "color": null
+      },
+      {
+        "text": "\n  -. Checklist : SMM-MNT-F26 (Revised)",
+        "color": "red"
+      },
+      {
+        "text": "\n. Verify the operational status of emergency\n  equipment.\n. Maintain and keep records of test dates for\n  em'cy fire pump, em'cy generator,em'cy steering,\n  and em'cy bilge pump.\n. Check the charging status of the emergency air\n  reservoir.\n -. It must always be filled to the proper pressure,\n   and the minimum required pressure should be \n   clearly marked on site.\n. Post the operating instructions for the priming\n   device of the em'cy fire pump at local",
+        "color": null
+      }
+    ],
+    "action_rich_k": [
+      {
+        "text": ". 비상발전기의 부하 운전은 매 분기별 테스트 및 \n  기록이 되어야 한다. \n  -. 최근 부하테스트 일자 현장 게시\n  -. RTS  테스트 방법 현장 게시\n",
+        "color": null
+      },
+      {
+        "text": "  -. Checklist : SMM-MNT-F26 (개정)",
+        "color": "red"
+      },
+      {
+        "text": "\n",
+        "color": "sky"
+      },
+      {
+        "text": ". 비상기기의 작동상태 확인 \n  비상소화펌프/ 비상발전기/ 비상조타/ 비상 빌지\n  펌프등  테스트 일자 기록 유지 보관\n. 비상 압축공기 탱크의 충전상태 확인 \n -. 항상 적정 압력이 충진되어 있어하며, 최소\n   유지 압력을 현장에 마킹 할 것 \n. 비상 소화펌프의 Priming pp작동법 현장 게시 \n  할 것\n",
+        "color": null
       }
     ]
   }

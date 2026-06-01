@@ -228,6 +228,28 @@ def get_field(item: dict, *keys) -> str:
     return ""
 
 
+
+def render_rich_action(segments, lang: str) -> str:
+    """action_rich_e / action_rich_k 세그먼트를 HTML로 렌더링."""
+    CSS = {'red': '#e02424', 'blue': '#1a56db', 'sky': '#00b0f0'}
+    import html as _h
+    has_kr = lambda t: bool(__import__('re').search(r'[가-힣]', t or ''))
+    parts = []
+    for seg in segments:
+        txt   = seg.get('text', '')
+        color = seg.get('color')
+        if not txt: continue
+        # 언어 필터
+        is_kr_seg = has_kr(txt)
+        if lang == 'en' and is_kr_seg: continue
+        if lang == 'kr' and not is_kr_seg: continue
+        esc = _h.escape(txt).replace('\n', '<br>')
+        if color and color in CSS:
+            parts.append(f'<span style=color:{CSS[color]}>{esc}</span>')
+        else:
+            parts.append(f'<span>{esc}</span>')
+    return '<div style=white-space:pre-wrap>' + ''.join(parts) + '</div>'
+
 def render_bilingual(text, lang: str = "en") -> str:
     """
     lang: 'en' | 'kr'
@@ -1029,10 +1051,16 @@ if page == PAGE_SEARCH:
                     expander_label = "✅  Action"
                     with st.expander(expander_label):
                         a_kr = st.toggle("ENG" if st.session_state.get(f"ta_{no}") else "한국어", key=f"ta_{no}")
-                        content  = action_k if a_kr else action_e
-                        fallback = action_e if a_kr else action_k
-                        rendered_a = render_bilingual(content or fallback, "kr" if a_kr else "en")
-                        st.markdown(rendered_a, unsafe_allow_html=True)
+                        lang_a = "kr" if a_kr else "en"
+                        rich_e = item.get("action_rich_e")
+                        rich_k = item.get("action_rich_k")
+                        rich   = rich_k if a_kr else rich_e
+                        if rich:
+                            st.markdown(render_rich_action(rich, lang_a), unsafe_allow_html=True)
+                        else:
+                            content  = action_k if a_kr else action_e
+                            fallback = action_e if a_kr else action_k
+                            st.markdown(render_bilingual(content or fallback, lang_a), unsafe_allow_html=True)
 
                 # Essential Check
                 cp = item.get("essential_check", "")
