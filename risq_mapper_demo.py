@@ -1026,34 +1026,8 @@ if page == PAGE_SEARCH:
                 action_e = get_field(item, "action(E)", "Action(E)")
                 action_k = get_field(item, "action(K)", "Action(K)")
                 if action_e or action_k:
-                    # 색상 뱃지 생성
-                    ac = item.get("action_color", {})
-                    COLOR_STYLE = {
-                        "blue": ("🔵", "#0000FF", "신규/개정"),
-                        "sky":  ("🔷", "#00B0F0", "참고"),
-                        "red":  ("🔴", "#FF0000", "주의"),
-                    }
-                    color_badge = ""
-                    if ac:
-                        active_colors = set(ac.values())
-                        for ckey in ["red", "sky", "blue"]:
-                            if ckey in active_colors:
-                                icon, hex_c, label = COLOR_STYLE[ckey]
-                                color_badge = (
-                                    f" <span style='font-size:.72rem;background:{hex_c}22;"
-                                    f"color:{hex_c};border:1px solid {hex_c}88;"
-                                    f"border-radius:4px;padding:2px 6px;margin-left:4px;"
-                                    f"font-weight:700'>{icon} {label}</span>"
-                                )
-                                break
-
                     expander_label = "✅  Action"
                     with st.expander(expander_label):
-                        if color_badge:
-                            st.markdown(
-                                f"<div style='margin-bottom:6px'>{color_badge}</div>",
-                                unsafe_allow_html=True,
-                            )
                         a_kr = st.toggle("ENG" if st.session_state.get(f"ta_{no}") else "한국어", key=f"ta_{no}")
                         content  = action_k if a_kr else action_e
                         fallback = action_e if a_kr else action_k
