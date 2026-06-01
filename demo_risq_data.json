@@ -17,7 +17,7 @@
     "related_documents": [
       {
         "title": "Drug & Alcohol Control Manual",
-        "filename": "RISQ_2_9_1.pdf",
+        "filename": "Manual- DRUG AND ALCOHOL CONTROL.pdf",
         "desc": "Company drug and alcohol control policy & procedures"
       }
     ]
@@ -37,12 +37,12 @@
     "related_documents": [
       {
         "title": "Safe Operation Procedure Manual (SMS)",
-        "filename": "RISQ_2_14_1.pdf",
+        "filename": "MANUAL - PR-OPR-SOP 안전운항 절차서 SAFE OPERATION PROCEDURE.pdf",
         "desc": "Navigation & watchkeeping procedures"
       },
       {
         "title": "ECDIS Maker Certificate (Sample)",
-        "filename": "RISQ_2_14_2.pdf",
+        "filename": "Sample - ECDIS MAKER CERT.pdf",
         "desc": "Type approval certificate sample for ECDIS equipment"
       }
     ]
@@ -65,12 +65,12 @@
     "related_documents": [
       {
         "title": "Safe Operation Procedure Manual (SMS)",
-        "filename": "RISQ_3_1_1.pdf",
+        "filename": "MANUAL- PR-OPR-SOP 안전운항 절차서 SAFE OPERATION PROCEDURE.pdf",
         "desc": "Navigation safety & bridge procedures"
       },
       {
         "title": "RightShip Circular 15/2019 — CATZOC & UKC",
-        "filename": "RISQ_3_1_2.pdf",
+        "filename": "Rightship Circular 15- 2019 - ECDIS, is CATZOC concidered for UKC.pdf",
         "desc": "Official RightShip guidance on CATZOC consideration for UKC"
       }
     ]
@@ -93,12 +93,12 @@
     "related_documents": [
       {
         "title": "Safe Operation Procedure Manual (SMS)",
-        "filename": "RISQ_3_7_1.pdf",
+        "filename": "MANUAL- PR-OPR-SOP 안전운항 절차서 SAFE OPERATION PROCEDURE..pdf",
         "desc": "UKC policy and passage planning procedures"
       },
       {
         "title": "Photo Evidence — UKC / Passage Planning",
-        "filename": "RISQ_3_7_2.pdf",
+        "filename": "PHOTOS.pdf",
         "desc": "Onboard photo evidence of UKC calculation and passage plan"
       }
     ]
@@ -123,12 +123,12 @@
     "related_documents": [
       {
         "title": "Safety & Health Management Procedure (SMS)",
-        "filename": "RISQ_4_2_1.pdf",
+        "filename": "MANUAL PR-ESH-SHM 안전보건 절차서 SAFETY HEALTH Management Procedure.pdf",
         "desc": "Safety officer duties and health management"
       },
       {
         "title": "Safety Officer Certificate (Sample)",
-        "filename": "RISQ_4_2_2.pdf",
+        "filename": "SAFETY OFFICER CERT (SAMPLE).pdf",
         "desc": "STCW-compliant safety officer designation certificate sample"
       }
     ]
@@ -150,12 +150,12 @@
     "related_documents": [
       {
         "title": "Safety & Health Management Procedure (SMS)",
-        "filename": "RISQ_4_16_1.pdf",
+        "filename": "MANUAL - PR-ESH-SHM 안전보건 절차서 SAFETY HEALTH Management Procedure.pdf",
         "desc": "Gas detection procedures and equipment management"
       },
       {
         "title": "Photo Evidence — Gas Detector Inspection",
-        "filename": "RISQ_4_16_2.pdf",
+        "filename": "PHOTOS.pdf",
         "desc": "Onboard photo evidence of gas detector condition & calibration"
       }
     ]
