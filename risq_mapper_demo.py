@@ -314,35 +314,21 @@ def render_bilingual(text, lang: str = "en") -> str:
         return "<span style='color:var(--muted);font-style:italic'>—</span>"
 
     # ── 일반 단락 텍스트 (Question, Guide) ───────────────────────
-    lines = [l.strip() for l in text.split("\n") if l.strip()]
-    items = []
-    for line in lines:
-        is_kr = bool(re.search(r"[가-힣]", line))
-        if items:
-            prev_kr   = bool(re.search(r"[가-힣]", items[-1]["text"]))
-            prev_text = items[-1]["text"]
-            # 이전 줄이 문장 끝 부호 없이 끝나고 같은 언어면 → 이어 붙임 (PDF 강제 개행)
-            prev_ends_sentence = bool(re.search(r'[.!?:]\s*$', prev_text))
-            starts_new = (bool(re.match(r'^[>›•]|^\d+\.\s|^-\.\s', line))
-                          or citation_re.match(line))
-            if (prev_kr == is_kr
-                    and not prev_ends_sentence
-                    and not starts_new):
-                items[-1]["text"] += " " + line
-            else:
-                items.append({"text": line})
-        else:
-            items.append({"text": line})
+    # JSON이 clean_paragraphs()로 전처리됨: \n = 단락 구분, 출처는 독립 줄
+    def has_kr_s(t): return bool(re.search(r"[가-힣]", t))
 
-    # 출처 위치 기반 필터: EN 섹션 출처 → EN 모드에만, KR 섹션 출처 → KR 모드에만
+    all_lines = [l.strip() for l in text.split("\n") if l.strip()]
+    items = [{"text": l} for l in all_lines]
+
+    # 출처 위치 기반 필터
     first_kr_pos = next(
-        (i for i, it in enumerate(items) if bool(re.search(r"[가-힣]", it["text"]))),
+        (i for i, it in enumerate(items) if has_kr_s(it["text"])),
         len(items)
     )
     target = []
     for i, it in enumerate(items):
-        is_kr_it  = bool(re.search(r"[가-힣]", it["text"]))
-        is_cite   = bool(citation_re.search(it["text"]))
+        is_kr_it = has_kr_s(it["text"])
+        is_cite  = bool(citation_re.search(it["text"]))
         if lang == "en":
             if not is_kr_it and not is_cite:
                 target.append(it)
@@ -369,8 +355,8 @@ def render_bilingual(text, lang: str = "en") -> str:
         lines = [p.strip() for p in t.split('\n') if p.strip()]
         result = []
         for line in lines:
-            # 400자 초과 단락은 문장 단위로 추가 분리
-            if len(line) > 400 and not line.startswith('>'):
+            # 문장 단위 분리 비활성화 — CSS word-wrap으로 처리
+            if False and len(line) > 400 and not line.startswith('>'):
                 # 영문: 문장 끝(소문자/괄호 뒤 마침표 + 공백 + 대문자)
                 parts = re.split(r'(?<=[a-z\)])\.\s+(?=[A-Z\(])', line)
                 # 한국어: 종결 어미 뒤 분리
