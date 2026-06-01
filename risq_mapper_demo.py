@@ -229,26 +229,47 @@ def get_field(item: dict, *keys) -> str:
 
 
 
-def render_rich_action(segments, lang: str) -> str:
-    """action_rich_e / action_rich_k 세그먼트를 HTML로 렌더링."""
-    CSS = {'red': '#e02424', 'blue': '#1a56db', 'sky': '#00b0f0'}
+def render_action(text: str = "", segments=None, lang: str = "en") -> str:
+    """액션 필드 렌더링 — 엑셀 원문 서식 유지, 색상만 적용."""
     import html as _h
-    has_kr = lambda t: bool(__import__('re').search(r'[가-힣]', t or ''))
-    parts = []
-    for seg in segments:
-        txt   = seg.get('text', '')
-        color = seg.get('color')
-        if not txt: continue
-        # 언어 필터
-        is_kr_seg = has_kr(txt)
-        if lang == 'en' and is_kr_seg: continue
-        if lang == 'kr' and not is_kr_seg: continue
-        esc = _h.escape(txt).replace('\n', '<br>')
-        if color and color in CSS:
-            parts.append(f'<span style=color:{CSS[color]}>{esc}</span>')
-        else:
-            parts.append(f'<span>{esc}</span>')
-    return '<div style=white-space:pre-wrap>' + ''.join(parts) + '</div>'
+    CSS = {"red": "#e02424", "blue": "#1a56db", "sky": "#00b0f0"}
+    has_kr = lambda t: bool(re.search(r"[가-힣]", t or ""))
+
+    if segments:
+        parts = []
+        for seg in segments:
+            txt   = seg.get("text", "")
+            color = seg.get("color")
+            if not txt:
+                continue
+            is_kr_seg = has_kr(txt)
+            if lang == "en" and is_kr_seg:
+                continue
+            if lang == "kr" and not is_kr_seg:
+                continue
+            esc = _h.escape(txt)
+            if color and color in CSS:
+                parts.append(
+                    f'<span style="color:{CSS[color]}">{esc}</span>'
+                )
+            else:
+                parts.append(esc)
+        body = "".join(parts)
+    else:
+        if not text or text.strip() in ("-", "NII"):
+            return "<span style='color:var(--muted);font-style:italic'>—</span>"
+        body = _h.escape(text)
+
+    return (
+        f'<div style="white-space:pre-wrap;line-height:1.7;font-size:.9rem">'
+        f'{body}</div>'
+    )
+
+
+# legacy alias
+def render_rich_action(segments, lang: str = "en") -> str:
+    return render_action(segments=segments, lang=lang)
+
 
 def render_bilingual(text, lang: str = "en") -> str:
     """
@@ -1050,17 +1071,20 @@ if page == PAGE_SEARCH:
                 if action_e or action_k:
                     expander_label = "✅  Action"
                     with st.expander(expander_label):
-                        a_kr = st.toggle("ENG" if st.session_state.get(f"ta_{no}") else "한국어", key=f"ta_{no}")
+                        a_kr   = st.toggle("ENG" if st.session_state.get(f"ta_{no}") else "한국어", key=f"ta_{no}")
                         lang_a = "kr" if a_kr else "en"
                         rich_e = item.get("action_rich_e")
                         rich_k = item.get("action_rich_k")
-                        rich   = rich_k if a_kr else rich_e
-                        if rich:
-                            st.markdown(render_rich_action(rich, lang_a), unsafe_allow_html=True)
+                        if a_kr:
+                            segs = rich_k or rich_e
+                            txt  = action_k or action_e
                         else:
-                            content  = action_k if a_kr else action_e
-                            fallback = action_e if a_kr else action_k
-                            st.markdown(render_bilingual(content or fallback, lang_a), unsafe_allow_html=True)
+                            segs = rich_e or rich_k
+                            txt  = action_e or action_k
+                        st.markdown(
+                            render_action(txt, segments=segs, lang=lang_a),
+                            unsafe_allow_html=True,
+                        )
 
                 # Essential Check
                 cp = item.get("essential_check", "")
