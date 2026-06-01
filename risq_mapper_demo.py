@@ -173,6 +173,9 @@ def load_pdf_cache() -> dict:
 
 _PDF_CACHE = load_pdf_cache()
 
+def get_file_bytes(filename: str):
+    return _PDF_CACHE.get(filename)
+
 def get_pdf_bytes(filename: str):
     return _PDF_CACHE.get(filename, None)
 
@@ -460,9 +463,9 @@ def toggle_bookmark(no: str) -> None:
 
 
 
-def render_company_prep(text: str) -> str:
+def render_essential_check(text: str) -> str:
     """
-    회사준비사항 전용 렌더러.
+    Essential Check 전용 렌더러.
     한/영 혼합 텍스트를 언어 필터 없이 그대로 표시.
     - '. ' / '-. ' 불릿 → 들여쓰기
     - 줄바꿈 → 단락 구분
@@ -548,7 +551,7 @@ def show_full_dialog(item: dict) -> None:
 
     # Question
     st.markdown("<div class='sec-header'>Question</div>", unsafe_allow_html=True)
-    q_kr = st.toggle("한국어", key=f"dlg_q_{no}")
+    q_kr = st.toggle("ENG" if st.session_state.get(f"dlg_q_{no}") else "한국어", key=f"dlg_q_{no}")
     st.markdown(
         render_bilingual(item.get("Description", ""), "kr" if q_kr else "en"),
         unsafe_allow_html=True,
@@ -561,7 +564,7 @@ def show_full_dialog(item: dict) -> None:
             "<hr class='sec-div'><div class='sec-header'>Guide</div>",
             unsafe_allow_html=True,
         )
-        g_kr = st.toggle("한국어", key=f"dlg_g_{no}")
+        g_kr = st.toggle("ENG" if st.session_state.get(f"dlg_g_{no}") else "한국어", key=f"dlg_g_{no}")
         st.markdown(
             render_bilingual(guide_val, "kr" if g_kr else "en"),
             unsafe_allow_html=True,
@@ -575,7 +578,7 @@ def show_full_dialog(item: dict) -> None:
             "<hr class='sec-div'><div class='sec-header'>Action</div>",
             unsafe_allow_html=True,
         )
-        a_kr = st.toggle("한국어", key=f"dlg_a_{no}")
+        a_kr = st.toggle("ENG" if st.session_state.get(f"dlg_a_{no}") else "한국어", key=f"dlg_a_{no}")
         content  = ak if a_kr else ae
         fallback = ae if a_kr else ak
         st.markdown(
@@ -583,15 +586,15 @@ def show_full_dialog(item: dict) -> None:
             unsafe_allow_html=True,
         )
 
-    # 회사준비사항
-    cp = item.get("company_prep", "")
+    # Essential Check
+    cp = item.get("essential_check", "")
     if cp and cp.strip():
         st.markdown(
-            "<hr class='sec-div'><div class='sec-header'>🏢 회사준비사항</div>",
+            "<hr class='sec-div'><div class='sec-header'>✔️ Essential Check</div>",
             unsafe_allow_html=True,
         )
         st.markdown(
-            render_company_prep(cp),
+            render_essential_check(cp),
             unsafe_allow_html=True,
         )
 
@@ -713,17 +716,17 @@ def show_section_dialog(item: dict, section: str) -> None:
         st.markdown("<div class='hr-banner'>🚨 HIGH RISK ITEM</div>", unsafe_allow_html=True)
     if section == "Question":
         st.markdown("<div class='sec-header'>Question</div>", unsafe_allow_html=True)
-        q_kr = st.toggle("한국어", key=f"sd_q_{no}")
+        q_kr = st.toggle("ENG" if st.session_state.get(f"sd_q_{no}") else "한국어", key=f"sd_q_{no}")
         st.markdown(render_bilingual(item.get("Description", ""), "kr" if q_kr else "en"), unsafe_allow_html=True)
     elif section == "Guide":
         st.markdown("<div class='sec-header'>Guide</div>", unsafe_allow_html=True)
-        g_kr = st.toggle("한국어", key=f"sd_g_{no}")
+        g_kr = st.toggle("ENG" if st.session_state.get(f"sd_g_{no}") else "한국어", key=f"sd_g_{no}")
         st.markdown(render_bilingual(get_field(item, "Guide"), "kr" if g_kr else "en"), unsafe_allow_html=True)
     elif section == "Action":
         ae = get_field(item, "action(E)", "Action(E)")
         ak = get_field(item, "action(K)", "Action(K)")
         st.markdown("<div class='sec-header'>Action</div>", unsafe_allow_html=True)
-        a_kr     = st.toggle("한국어", key=f"sd_a_{no}")
+        a_kr     = st.toggle("ENG" if st.session_state.get(f"sd_a_{no}") else "한국어", key=f"sd_a_{no}")
         content  = ak if a_kr else ae
         fallback = ae if a_kr else ak
         st.markdown(render_bilingual(content or fallback, "kr" if a_kr else "en"), unsafe_allow_html=True)
@@ -1005,7 +1008,7 @@ if page == PAGE_SEARCH:
 
                 # Question — individual 한국어 toggle
                 with st.expander("📋  Question", expanded=(len(matches) == 1)):
-                    q_kr = st.toggle("한국어", key=f"tq_{no}")
+                    q_kr = st.toggle("ENG" if st.session_state.get(f"tq_{no}") else "한국어", key=f"tq_{no}")
                     st.markdown(
                         render_bilingual(item.get("Description", ""), "kr" if q_kr else "en"),
                         unsafe_allow_html=True,
@@ -1015,7 +1018,7 @@ if page == PAGE_SEARCH:
                 guide_val = get_field(item, "Guide")
                 if guide_val:
                     with st.expander("📖  Guide"):
-                        g_kr = st.toggle("한국어", key=f"tg_{no}")
+                        g_kr = st.toggle("ENG" if st.session_state.get(f"tg_{no}") else "한국어", key=f"tg_{no}")
                         rendered = render_bilingual(guide_val, "kr" if g_kr else "en")
                         st.markdown(rendered, unsafe_allow_html=True)
 
@@ -1051,18 +1054,18 @@ if page == PAGE_SEARCH:
                                 f"<div style='margin-bottom:6px'>{color_badge}</div>",
                                 unsafe_allow_html=True,
                             )
-                        a_kr = st.toggle("한국어", key=f"ta_{no}")
+                        a_kr = st.toggle("ENG" if st.session_state.get(f"ta_{no}") else "한국어", key=f"ta_{no}")
                         content  = action_k if a_kr else action_e
                         fallback = action_e if a_kr else action_k
                         rendered_a = render_bilingual(content or fallback, "kr" if a_kr else "en")
                         st.markdown(rendered_a, unsafe_allow_html=True)
 
-                # 회사준비사항
-                cp = item.get("company_prep", "")
+                # Essential Check
+                cp = item.get("essential_check", "")
                 if cp and cp.strip():
-                    with st.expander("🏢  회사준비사항"):
+                    with st.expander("✔️  Essential Check"):
                         st.markdown(
-                            render_company_prep(cp),
+                            render_essential_check(cp),
                             unsafe_allow_html=True,
                         )
 
@@ -1088,9 +1091,10 @@ if page == PAGE_SEARCH:
                             title = doc.get("title", fname)
                             desc  = doc.get("desc", "")
                             pdf_bytes = get_pdf_bytes(fname)
+                            is_img = fname.lower().rsplit(".", 1)[-1] in ("png", "jpg", "jpeg")
                             st.markdown(
                                 f"<div style='font-weight:600;color:var(--navy);"
-                                f"margin:10px 0 2px'>📄 {_html.escape(title)}</div>"
+                                f"margin:10px 0 2px'>{'🖼️' if is_img else '📄'} {_html.escape(title)}</div>"
                                 f"<div style='font-size:.8rem;color:var(--muted);"
                                 f"margin-bottom:8px'>{_html.escape(desc)}</div>",
                                 unsafe_allow_html=True,
@@ -1098,11 +1102,12 @@ if page == PAGE_SEARCH:
                             dc1, dc2 = st.columns(2)
                             with dc1:
                                 if pdf_bytes:
+                                    mime = "image/png" if is_img else "application/pdf"
                                     st.download_button(
                                         label="⬇️  다운로드",
                                         data=pdf_bytes,
                                         file_name=fname,
-                                        mime="application/pdf",
+                                        mime=mime,
                                         key=f"dl_{no}_{d_idx}",
                                         use_container_width=True,
                                     )
@@ -1117,8 +1122,11 @@ if page == PAGE_SEARCH:
                                     st.session_state[pv_key] = not st.session_state[pv_key]
                             if st.session_state.get(pv_key) and pdf_bytes:
                                 import base64 as _b64
-                                b64 = _b64.b64encode(pdf_bytes).decode()
-                                st.components.v1.html(
+                                if is_img:
+                                    st.image(pdf_bytes, use_column_width=True)
+                                else:
+                                    b64 = _b64.b64encode(pdf_bytes).decode()
+                                    st.components.v1.html(
                                     f"""<!DOCTYPE html><html><head>
                                     <style>
                                     body{{margin:0;padding:0;background:#525659;font-family:sans-serif}}
